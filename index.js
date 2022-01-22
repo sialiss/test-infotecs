@@ -37,6 +37,9 @@ function fillRow(tr, each, columns) {
     for (const column of columns) {
         const td = document.createElement("td")
         tr.append(td)
+        if (column == 'about') {
+            td.classList.add('about')
+        }
         if (each[column] != undefined) {
             td.innerText = each[column]
         }

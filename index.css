@@ -23,4 +23,17 @@ body {
     
 }
 
+.about {
+    /* 
+    отображение только первых двух строк
+    поддерживается всеми браузерами,
+    кроме IE, OperaMini, KaiOS Browser из-за -webkit-
+    для полной поддержки можно сделать это с помощью JS 
+    */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
 /* многоточие делается через стили */
