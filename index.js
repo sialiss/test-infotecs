@@ -19,11 +19,35 @@ function createTable(table, columns) {
         th.innerText = column
         tr.append(th)
     }
+    fillTable(table, columns, data)
 }
 
-function fillTable(table, data) {
+function fillTable(table, columns, data) {
+    const tbody = document.createElement("tbody")
+    table.append(tbody)
 
+    for (const each of data) {
+        const tr = document.createElement("tr")
+        tbody.append(tr)
+        fillRow(tr, each, columns)
+    }
+}
+
+function fillRow(tr, each, columns) {
+    for (const column of columns) {
+        const td = document.createElement("td")
+        tr.append(td)
+        if (each[column] != undefined) {
+            td.innerText = each[column]
+        }
+        else {
+            for (const name of Object.getOwnPropertyNames(each)) {
+                if (each[name][column]) {
+                    td.innerText = each[name][column]
+                }
+            }
+        }
+    }
 }
 
 createTable(table, columns)
-fillTable(table, data)
