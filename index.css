@@ -4,8 +4,8 @@ html {
 }
 
 body { 
-    background: rgb(230, 249, 255); /* Фоновый цвет и фоновый рисунок*/
-	color: black; /*Цвет текста на странице*/
+    background: rgb(230, 249, 255);
+	color: black;
 }
 
 .data {
@@ -13,7 +13,7 @@ body {
     border-width: 1px;
     border-radius: 10px;
     border: 1px black;
-    border-collapse:collapse;
+    border-collapse: collapse;
 }
 
 .wrapper {
@@ -35,5 +35,3 @@ body {
     -webkit-box-orient: vertical;  
     overflow: hidden;
 }
-
-/* многоточие делается через стили */
