@@ -1,12 +1,10 @@
 // когда обновляется состояние
 // я ищу нужные записи в массиве,
 // чищу таблицу и создаю в ней новые ряды
+import {quantLine, columns} from "./table"
 
+// Элемент таблицы
 const table = document.getElementById("table")
-let quantLine = 10
-const columns = {
-    "firstName" : "Имя", "lastName" : "Фамилия",
-    "about" : "Описание", "eyeColor" : "Цвет глаз"}
 
 // преобразование данных из json в массив объектов
 // для использования fetch нужен сервер
