@@ -16,14 +16,31 @@ function createTable(table, {quantLines, columns}) {
     table.append(thead)
     const tr = document.createElement("tr")
     thead.append(tr)
-
-    for (const column of Object.getOwnPropertyNames(columns)) {
+    
+    Object.values(columns).forEach((column, i) => {
         // Создание и заполнение заголовков таблицы
         const th = document.createElement("th")
-        th.innerText = columns[column]
+        th.innerText = column
         tr.append(th)
-    }
+        const btn = document.createElement("button")
+        btn.addEventListener("click", () => tableAbcSort(i))
+        th.append(btn)
+    }); 
     fillTable(table, columns, data)
+}
+
+function tableAbcSort(n) {
+    // сделать стейты ансорт, сорталф, сортреверсалф, сделать либо две кнопки, 
+    // либо чтобы оно по повторному нажатию менялось, лучше выпадающий список
+    // получает колонку
+    let sortedRows = Array.from(table.rows)
+    // отрезает заголовки    
+    .slice(1) 
+    // сортирует по алфавиту
+    .sort((rowA, rowB) =>
+            rowA.cells[n].innerHTML > rowB.cells[n].innerHTML ? 1 : -1);
+
+    table.tBodies[0].append(...sortedRows);
 }
 
 function fillTable(table, columns, data) {
@@ -41,7 +58,7 @@ function fillTable(table, columns, data) {
 
 function fillRow(tr, each, columns) {
     // Заполняет данные для каждого объекта
-    for (const column of Object.getOwnPropertyNames(columns)) {
+    for (const column of Object.keys(columns)) {
         // Создаёт ячейку (столбик)
         const td = document.createElement("td")
         tr.append(td)
