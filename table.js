@@ -1,7 +1,7 @@
 // параметры таблицы
 
-export default tableParam = {
-    quantLine : 10,
+export const tableParam = {
+    quantLines : 10,
     columns : {
         "firstName": "Имя",
         "lastName": "Фамилия",

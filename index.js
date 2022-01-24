@@ -1,7 +1,7 @@
 // когда обновляется состояние
 // я ищу нужные записи в массиве,
 // чищу таблицу и создаю в ней новые ряды
-import {quantLine, columns} from "./table"
+import {tableParam} from "./table.js"
 
 // Элемент таблицы
 const table = document.getElementById("table")
@@ -10,7 +10,7 @@ const table = document.getElementById("table")
 // для использования fetch нужен сервер
 const data = await fetch('./data.json').then(res => res.json())
 
-function createTable(table, columns) {
+function createTable(table, {quantLines, columns}) {
     // Создание головы таблциы
     const thead = document.createElement("thead")
     table.append(thead)
@@ -72,4 +72,4 @@ function getFromProperties(obj, nedeedData) {
             }
 }
 
-createTable(table, columns)
+createTable(table, tableParam)
