@@ -22,18 +22,26 @@ function createTable(table, {quantLines, columns}) {
         const th = document.createElement("th")
         th.innerText = column
         tr.append(th)
-        const btn = document.createElement("button")
-        btn.addEventListener("click", () => tableAbcSort(i))
-        th.append(btn)
+        th.append(createSortBtn(i))
+        th.append(createHideBtn(i))
     }); 
     fillTable(table, columns, data)
 }
 
+function createSortBtn(i) {
+    const btn = document.createElement("button")
+    btn.addEventListener("click", () => tableAbcSort(i))
+    btn.innerText = "🠓" // 🠑
+    return btn
+}
+
 function tableAbcSort(n) {
+    
     // сделать стейты ансорт, сорталф, сортреверсалф, сделать либо две кнопки, 
     // либо чтобы оно по повторному нажатию менялось, лучше выпадающий список
     // получает колонку
-    let sortedRows = Array.from(table.rows)
+    const unsortedRows = Array.from(table.rows)
+    let sortedRows = unsortedRows
     // отрезает заголовки    
     .slice(1) 
     // сортирует по алфавиту
@@ -41,6 +49,22 @@ function tableAbcSort(n) {
             rowA.cells[n].innerHTML > rowB.cells[n].innerHTML ? 1 : -1);
 
     table.tBodies[0].append(...sortedRows);
+}
+
+function createHideBtn(i) {
+    const btn = document.createElement("button")
+    btn.addEventListener("click", () => hideColumn(i))
+    btn.innerText = "☓"
+    return btn
+}
+
+function hideColumn(n) {
+    const rows = Array.from(table.rows)
+    for (const row of rows) {
+        console.log(row)
+        row
+    }
+    // elemDoc.classList.toggle("hidden")
 }
 
 function fillTable(table, columns, data) {
