@@ -1,7 +1,7 @@
 // параметры таблицы
 
 export const tableParam = {
-    quantLines : 10,
+    rowsPerPage : 10,
     columns : {
         "firstName": "Имя",
         "lastName": "Фамилия",
