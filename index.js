@@ -8,13 +8,14 @@ import { AwesomeCoolTable } from "./createTable.js"
 async function start() {
     // получение элемента таблицы
     const tableEl = document.getElementById("table")
+    const tableMenuEl = document.getElementById("tableMenu")
 
     // преобразование данных из json в массив объектов
     // для использования fetch нужен сервер
     const data = await fetch('./data.json').then(res => res.json())
 
-    const table = new AwesomeCoolTable(tableEl, tableParam, data)
-
+    const table = new AwesomeCoolTable(tableEl, tableMenuEl, tableParam, data)
+    table.createTable()
 }
 
 // создание таблицы начинается после загрузки DOM

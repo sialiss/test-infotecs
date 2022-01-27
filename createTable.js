@@ -1,39 +1,50 @@
-import {makeElement} from "./makeElement.js" 
+import { makeElement } from "./makeElement.js" 
+// import { createHideBtn } from "./buttons.js"
+// import { tableSort } from "./tableSort.js"
 export class AwesomeCoolTable {
 
-    constructor(table, { rowsPerPage, columns }, data) {
+    constructor(table, tableMenu, { rowsPerPage, columns }, data) {
         this.table = table // Элемент таблицы в DOC
+        this.tableMenu = tableMenu // Элемент меню в DOC
         this.rowsPerPage = rowsPerPage // Количество строк на странице
         this.columns = columns // Названия колонок в таблице
         this.data = data // Массив объектов данных из JSON
-
-        this.createTable()
+        this.tableSortMore = true
     }
-    
-    // makeElement(type, ...children) {
-    //     // создание элемента, добавление ему детей (если есть)
-    //     const elem = document.createElement(type)
-    //     elem.append(...children)
-    //     return elem
-    // }
 
     createTable() {
+        // "🠓"
         // Создание хеда таблицы
         const thead = makeElement("thead",
             makeElement("tr",
-                ...Object.values(this.columns).map((column, i) => 
+                ...Object.keys(this.columns).map((column) => 
                     // Создание и заполнение заголовков таблицы
-                    makeElement("th",
-                        String(column),
-                        // this.createSortBtn(i),
-                        // this.createHideBtn(i)
-                    )
+                    this.createHeader(column)
                 )
             )
         )
         this.table.append(thead)
+        this.fillTableMenu()
         // создание и заполнение боди таблицы
         this.fillTable()
+    }
+
+    createHeader(column) {
+        const th = makeElement("th",
+            String(this.columns[column]),
+        ) 
+        const pointer = makeElement("p",
+            "🠓")
+        th.append(pointer)
+        th.addEventListener("click", () => this.tableSort(pointer, column))
+        return th
+    }
+
+    fillTableMenu() {
+        // здесь чекбоксы для скрытия колонок, изменение таблицы
+        for (const column of Object.keys(this.columns)) {
+            this.tableMenu.append(this.createHideBtn(column))
+        }
     }
     
     fillTable() {
@@ -77,7 +88,79 @@ export class AwesomeCoolTable {
         return td
     }
 
+    tableSort(pointer, column) {
+        // разделить на функции
+        // изменить работу стрелочки, возможно писать это в меню (колонка, стрелочка)
+
+        const sortConditionMore = [
+            (objA, objB) => objA[column] > objB[column] ? 1 : -1,
+            (objA, objB) =>
+                this.getFromProperties(objA, column) >
+                    this.getFromProperties(objB, column) ? 1 : -1    
+        ]
+        const sortConditionLess = [
+            (objA, objB) => objA[column] < objB[column] ? 1 : -1,
+            (objA, objB) =>
+                this.getFromProperties(objA, column) <
+                    this.getFromProperties(objB, column) ? 1 : -1 
+        ]
+
+        // если у первого объекта есть данные в нужной колонке, то сортирует
+        if (this.data[0][column] != undefined) {
+            
+            if (this.tableSortMore) {
+                // сортирует по алфавиту, если стейт true
+                this.data.sort(sortConditionMore[0])
+            } 
+            // обратная сортировка
+            else {
+                this.data.sort(sortConditionLess[0])
+            }
+        }
+        // если колонка не определена
+        else {
+            // берёт данные в свойствах
+            if (this.tableSortMore) {
+                this.data.sort(sortConditionMore[1])
+            } 
+            else {
+                this.data.sort(sortConditionLess[1])
+            }
+        }
+
+        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
+        this.fillTable() // перерендер тела таблицы
+        
+        if (this.tableSortMore == true) {
+            this.tableSortMore = false
+        }
+        else {
+            this.tableSortMore = true
+        }
+        pointer.classList.toggle("rotated")
+}
+    createHideBtn(i) {
+        const btn = makeElement("button", "☓")
+        btn.addEventListener("click", () => this.hideColumn(i))
+        return btn
+}
+
+    hideColumn(column) {
+        // вместо этого сделать перерендер таблицы без колонки с iтым номером
+        // сделать стейты для проверки
+        // сделать кнопку чекбоксом
+        
+    
+        delete this.columns[column]
+
+        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
+        this.table.tHead.remove()
+        this.tableMenu.buttons.remove()
+        this.createTable() // перерендер тела таблицы
+}
+
     getFromProperties(object, nedeedData) {
+        // берёт нужные данные в свойствах (если нет, то undefined)
         // проходит по всем свойствам объекта json, 
         // если находит, возвращает необходимую информацию
         for (const name of Object.keys(object)) {
