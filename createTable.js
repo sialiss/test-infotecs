@@ -1,75 +1,90 @@
-import { createHideBtn, createSortBtn } from './buttons.js'
-// сделать class AwesomeCoolTable
-// креате тейбл - конструктор
-// остальное - методы
-// (это для того чтобы тейбл не передавать миллион раз)
+import {makeElement} from "./makeElement.js" 
+export class AwesomeCoolTable {
 
-function makeElement(type, ...children) {
-    // создание элемента, добавление ему детей (если есть)
-    const elem = document.createElement(type)
-    elem.append(...children)
-    return elem
-}
+    constructor(table, { rowsPerPage, columns }, data) {
+        this.table = table // Элемент таблицы в DOC
+        this.rowsPerPage = rowsPerPage // Количество строк на странице
+        this.columns = columns // Названия колонок в таблице
+        this.data = data // Массив объектов данных из JSON
 
-export function createTable(table, { rowsPerPage, columns }, data) {
-    // Создание хеда таблицы
-    const thead = makeElement("thead",
-        makeElement("tr",
-            ...Object.values(columns).map((column, i) => 
-                // Создание и заполнение заголовков таблицы
-                makeElement("th",
-                    String(column),
-                    createSortBtn(i),
-                    createHideBtn(i)
+        this.createTable()
+    }
+    
+    // makeElement(type, ...children) {
+    //     // создание элемента, добавление ему детей (если есть)
+    //     const elem = document.createElement(type)
+    //     elem.append(...children)
+    //     return elem
+    // }
+
+    createTable() {
+        // Создание хеда таблицы
+        const thead = makeElement("thead",
+            makeElement("tr",
+                ...Object.values(this.columns).map((column, i) => 
+                    // Создание и заполнение заголовков таблицы
+                    makeElement("th",
+                        String(column),
+                        // this.createSortBtn(i),
+                        // this.createHideBtn(i)
+                    )
                 )
             )
         )
-    )
-    table.append(thead)
-    // создание и заполнение боди таблицы
-    fillTable(table, columns, data)
-    fillTable(columns, data)
-}
-
-function fillTable(columns, data) {
-    // Заполняет таблицу
-    // Создаёт тело таблицы
-    const tbody = makeElement("tbody",
-        ...data.map((row) => 
-            fillRow(row, columns)
+        this.table.append(thead)
+        // создание и заполнение боди таблицы
+        this.fillTable()
+    }
+    
+    fillTable() {
+        // Создаёт тело таблицы
+        const tbody = makeElement("tbody",
+            ...this.data.map((object) => 
+                this.fillRow(object)
+            )
         )
-    )
-}
+        this.table.append(tbody)
+    }
 
-function fillRow(row, columns) {
-    // Заполняет данные для каждого объекта
-    for (const column of Object.keys(columns)) {
-        // Создаёт ячейку (столбик)
-        const td = document.createElement("td")
-        tr.append(td)
+    fillRow(object) {
+        // Заполняет данные для каждого объекта
+        const tr = makeElement("tr",
+            ...Object.keys(this.columns).map((column) =>
+                // Создаёт ячейку (столбик)
+                this.createTd(object, column)
+            ) 
+        )
+        return tr
+    }
+
+    createTd(object, column) {
+        // console.log(object, column)
+        const td = makeElement("td")
         if (column == 'about') {
             // добавляет колонке about css класс (для скрытия информации)
             td.classList.add('about')
         }
-        if (each[column] != undefined) {
+        if (object[column] != undefined) {
             // если у объекта json есть колонка с нужным названием,
             // то ячейка заполняется
-            td.innerText = each[column]
+            td.innerText = object[column]
         }
         else {
             // если колонка не определена, 
             // то проверяет есть ли нужные данные в свойствах
-            td.innerText = getFromProperties(each, column)
+            td.innerText = this.getFromProperties(object, column)
         }
+        return td
+    }
+
+    getFromProperties(object, nedeedData) {
+        // проходит по всем свойствам объекта json, 
+        // если находит, возвращает необходимую информацию
+        for (const name of Object.keys(object)) {
+                    if (object[name][nedeedData]) {
+                        return object[name][nedeedData]
+                    }
+                }
     }
 }
 
-function getFromProperties(obj, nedeedData) {
-    // проходит по всем свойствам объекта json, 
-    // если находит, возвращает необходимую информацию
-    for (const name of Object.getOwnPropertyNames(obj)) {
-                if (obj[name][nedeedData]) {
-                    return obj[name][nedeedData]
-                }
-            }
-}

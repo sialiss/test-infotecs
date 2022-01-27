@@ -1,3 +1,5 @@
+import { makeElement } from "./makeElement"
+
 export function createSortBtn(i) {
     const btn = makeElement("button", "🠓")
     btn.addEventListener("click", () => tableAbcSort(i))
