@@ -57,9 +57,13 @@ export class AwesomeCoolTable {
 
     fillTableMenu() {
         // здесь чекбоксы для скрытия колонок, изменение таблицы
-        for (const column of Object.keys(this.columns)) {
-            this.tableMenu.append(this.createHideBtn(column))
-        }
+        this.tableMenu.append(
+            makeElement("div",
+                ...Object.keys(this.columns).map((column) =>
+                    this.createHideBtn(column)
+                )
+            )
+        )
     }
     
     fillTable() {
