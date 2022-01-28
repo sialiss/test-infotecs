@@ -9,34 +9,49 @@ export class AwesomeCoolTable {
         this.rowsPerPage = rowsPerPage // Количество строк на странице
         this.columns = columns // Названия колонок в таблице
         this.data = data // Массив объектов данных из JSON
-        this.tableSortMore = true
+        this.objects = []
+        for (const object of this.data) {
+            // Заполняет массив обработанными объектами,
+            // каждый объект содержит в свойствах необходимые для таблицы данные
+            // это нужно, чтобы обработать объекты только один раз,
+            // и не извлекать данные некоторых колонок из свойств объектов
+                this.objects.push(this.processObj(object))
+        }
+        this.tableSortMore = true // state сортировки (по алфавиту/против)
     }
 
     createTable() {
-        // "🠓"
         // Создание хеда таблицы
         const thead = makeElement("thead",
-            makeElement("tr",
-                ...Object.keys(this.columns).map((column) => 
-                    // Создание и заполнение заголовков таблицы
-                    this.createHeader(column)
-                )
+            makeElement(
+                "tr",
+                    ...Object.keys(this.columns).map((column) => 
+                        // Создание и заполнение заголовков таблицы
+                        this.createHeader(column)
+                    )
             )
         )
         this.table.append(thead)
+        // создание и заполнение меню таблицы
         this.fillTableMenu()
         // создание и заполнение боди таблицы
         this.fillTable()
     }
 
     createHeader(column) {
-        const th = makeElement("th",
-            String(this.columns[column]),
+        const pointer = makeElement(
+            "p",
+            {sortOn : false}, // state сортировки (включена ли)
+                "○"
+                
+        )
+        const th = makeElement(
+            "th",
+            {"click" : () => this.tableSort(pointer, column)},
+                String(this.columns[column]),
+                pointer
         ) 
-        const pointer = makeElement("p",
-            "🠓")
-        th.append(pointer)
-        th.addEventListener("click", () => this.tableSort(pointer, column))
+        
         return th
     }
 
@@ -49,41 +64,36 @@ export class AwesomeCoolTable {
     
     fillTable() {
         // Создаёт тело таблицы
-        const tbody = makeElement("tbody",
-            ...this.data.map((object) => 
-                this.fillRow(object)
-            )
+        const tbody = makeElement(
+            "tbody",
+                ...this.objects.map((object) => 
+                    this.fillRow(object)
+                )
         )
         this.table.append(tbody)
     }
 
     fillRow(object) {
         // Заполняет данные для каждого объекта
-        const tr = makeElement("tr",
-            ...Object.keys(this.columns).map((column) =>
-                // Создаёт ячейку (столбик)
-                this.createTd(object, column)
-            ) 
+        const tr = makeElement(
+            "tr",
+            {"click" : () => this.editObj(object)},
+                ...Object.keys(this.columns).map((column) =>
+                    // Создаёт ячейку для каждой колонки
+                    this.createTd(object, column)
+                ) 
         )
         return tr
     }
 
     createTd(object, column) {
-        // console.log(object, column)
-        const td = makeElement("td")
+        const td = makeElement(
+            "td",
+                String(object[column])
+        )
         if (column == 'about') {
             // добавляет колонке about css класс (для скрытия информации)
             td.classList.add('about')
-        }
-        if (object[column] != undefined) {
-            // если у объекта json есть колонка с нужным названием,
-            // то ячейка заполняется
-            td.innerText = object[column]
-        }
-        else {
-            // если колонка не определена, 
-            // то проверяет есть ли нужные данные в свойствах
-            td.innerText = this.getFromProperties(object, column)
         }
         return td
     }
@@ -91,41 +101,22 @@ export class AwesomeCoolTable {
     tableSort(pointer, column) {
         // разделить на функции
         // изменить работу стрелочки, возможно писать это в меню (колонка, стрелочка)
-
-        const sortConditionMore = [
-            (objA, objB) => objA[column] > objB[column] ? 1 : -1,
-            (objA, objB) =>
-                this.getFromProperties(objA, column) >
-                    this.getFromProperties(objB, column) ? 1 : -1    
-        ]
-        const sortConditionLess = [
-            (objA, objB) => objA[column] < objB[column] ? 1 : -1,
-            (objA, objB) =>
-                this.getFromProperties(objA, column) <
-                    this.getFromProperties(objB, column) ? 1 : -1 
-        ]
-
-        // если у первого объекта есть данные в нужной колонке, то сортирует
-        if (this.data[0][column] != undefined) {
-            
-            if (this.tableSortMore) {
-                // сортирует по алфавиту, если стейт true
-                this.data.sort(sortConditionMore[0])
-            } 
-            // обратная сортировка
-            else {
-                this.data.sort(sortConditionLess[0])
-            }
+        if (!(pointer.sortOn)) {
+            pointer.sortOn = !pointer.sortOn
+            pointer.innerText = "🠑"
         }
-        // если колонка не определена
+
+        if (this.tableSortMore) {
+            // сортирует по алфавиту, если стейт true
+            this.objects.sort(
+                (objA, objB) => objA[column] > objB[column] ? 1 : -1
+            )
+        } 
+        // обратная сортировка
         else {
-            // берёт данные в свойствах
-            if (this.tableSortMore) {
-                this.data.sort(sortConditionMore[1])
-            } 
-            else {
-                this.data.sort(sortConditionLess[1])
-            }
+            this.objects.sort(
+                (objA, objB) => objA[column] < objB[column] ? 1 : -1
+            )
         }
 
         this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
@@ -140,8 +131,11 @@ export class AwesomeCoolTable {
         pointer.classList.toggle("rotated")
 }
     createHideBtn(i) {
-        const btn = makeElement("button", "☓")
-        btn.addEventListener("click", () => this.hideColumn(i))
+        const btn = makeElement(
+            "button",
+            { "click" : () => this.hideColumn(i) },
+                "☓"
+        )
         return btn
 }
 
@@ -157,7 +151,31 @@ export class AwesomeCoolTable {
         this.table.tHead.remove()
         this.tableMenu.buttons.remove()
         this.createTable() // перерендер тела таблицы
-}
+    }
+    
+    editObj(object) {
+        // сделать стейт для проверки открыта ли форма сейчас
+        this.tableMenu.append(
+            makeElement("div",
+                makeElement("form",
+                    ...Object.keys(this.columns).map((column) =>
+                        makeElement(
+                            "input",
+                            { value: object[column] }
+                        )
+                    ),
+                    makeElement(
+                        "button",
+                        {
+                            type: "submit",
+                            "click": () => editSubmit(object)
+                        },
+                            "✓"
+                    )
+                )
+            )
+        )
+    }
 
     getFromProperties(object, nedeedData) {
         // берёт нужные данные в свойствах (если нет, то undefined)
@@ -168,6 +186,23 @@ export class AwesomeCoolTable {
                         return object[name][nedeedData]
                     }
                 }
+    }
+
+    processObj(object) {
+        const processedObj = {}
+        for (const column of Object.keys(this.columns)) {
+            if (object[column] != undefined) {
+                // если у объекта json есть колонка с нужным названием,
+                // то ячейка заполняется
+                processedObj[column] = object[column]
+            }
+            else {
+                // если колонка не определена, 
+                // то проверяет есть ли нужные данные в свойствах
+                processedObj[column] = this.getFromProperties(object, column)
+            }
+        }
+        return processedObj
     }
 }
 
