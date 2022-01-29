@@ -1,6 +1,7 @@
 import { makeElement } from "./makeElement.js" 
 // import { createHideBtn } from "./buttons.js"
 // import { tableSort } from "./tableSort.js"
+import { handleEditSubmit } from "./handleEditSubmit.js"
 export class AwesomeCoolTable {
 
     constructor(table, tableMenu, { rowsPerPage, columns }, data) {
@@ -17,7 +18,12 @@ export class AwesomeCoolTable {
             // и не извлекать данные некоторых колонок из свойств объектов
                 this.objects.push(this.processObj(object))
         }
-        this.tableSortMore = true // state сортировки (по алфавиту/против)
+
+        // state сортировки 
+        this.tableSortOn = false // включена ли
+        this.tableSortMore = true // по алфавиту/против
+        // state формы (открыта ли)
+        this.formOpen = false
     }
 
     createTable() {
@@ -104,10 +110,11 @@ export class AwesomeCoolTable {
 
     tableSort(pointer, column) {
         // разделить на функции
-        // изменить работу стрелочки, возможно писать это в меню (колонка, стрелочка)
+
         if (!(pointer.sortOn)) {
             pointer.sortOn = !pointer.sortOn
             pointer.innerText = "🠑"
+            this.tableSortOn = true
         }
 
         if (this.tableSortMore) {
@@ -123,17 +130,12 @@ export class AwesomeCoolTable {
             )
         }
 
-        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
-        this.fillTable() // перерендер тела таблицы
-        
-        if (this.tableSortMore == true) {
-            this.tableSortMore = false
-        }
-        else {
-            this.tableSortMore = true
-        }
+        this.tableRerender() // обновление таблицы
+        this.tableSortMore = !this.tableSortMore
+
         pointer.classList.toggle("rotated")
-}
+    }
+    
     createHideBtn(i) {
         const btn = makeElement(
             "button",
@@ -156,29 +158,60 @@ export class AwesomeCoolTable {
         this.tableMenu.buttons.remove()
         this.createTable() // перерендер тела таблицы
     }
-    
+
     editObj(object) {
-        // сделать стейт для проверки открыта ли форма сейчас
-        this.tableMenu.append(
-            makeElement("div",
-                makeElement("form",
+        let form
+        const formName = "editObj"
+        if (!this.formOpen) {
+            form = makeElement(
+                "form",
+                { name: formName },
                     ...Object.keys(this.columns).map((column) =>
                         makeElement(
                             "input",
-                            { value: object[column] }
+                            {
+                                value: object[column],
+                                name: column
+                            }
                         )
                     ),
                     makeElement(
                         "button",
-                        {
-                            type: "submit",
-                            "click": () => editSubmit(object)
-                        },
+                        { type: "submit" },
                             "✓"
                     )
-                )
             )
-        )
+            
+            this.tableMenu.append(form)
+            this.formOpen = true
+        }
+        else {
+            form = document.forms[formName]
+            const inputNames = Object.keys(this.columns)
+            for (const input of inputNames) {
+                form[input].value = object[input]
+            }
+        }
+
+        form.onsubmit = (e) =>
+            this.handleEditSubmit(e, form.name, object,
+                ...Object.keys(this.columns).map((column) => column))
+    }
+
+    handleEditSubmit(e, formName, object, ...inputNames) {
+        e.preventDefault()
+        const form = document.forms[formName]
+        for (const prop of inputNames) {
+            object[prop] = form[prop].value
+        }
+        this.tableRerender()
+        form.remove()
+        this.formOpen = false
+    }
+
+    tableRerender() {
+        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
+        this.fillTable() // перерендер тела таблицы
     }
 
     getFromProperties(object, nedeedData) {
