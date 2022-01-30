@@ -70,6 +70,22 @@ export class AwesomeCoolTable {
                     ...Object.keys(this.columns).map((column, i) =>
                         this.createHideCheckbox(column, i)
                     )
+                    
+            ),
+            makeElement("form",
+                { name: "pages" },
+                    makeElement("button",
+                        {
+                            type: "button",
+                            "click": "func"
+                        },
+                        "⬅"),
+                    makeElement("button",
+                        {
+                            type: "button",
+                            "click": "func"
+                        },
+                        "➡")
             )
         )
     }
@@ -128,11 +144,19 @@ export class AwesomeCoolTable {
                 String(object[column])
         )
         if (column == 'about') {
-            // добавляет колонке about css класс (для скрытия информации)
+            // добавляет ячейке about css класс (для скрытия информации)
             td.classList.add('about')
         }
         if (this.columns[column].hidden) {
+            // скрывает ячейку, если колонка скрыта
             td.classList.add('hidden')
+        }
+        if (column == 'eyeColor') {
+            // В колонке “eyeColor” предоставлять данные
+            // в виде цвета, сохраняя возможность сортировки по значению.
+            const color = makeElement("img")
+            color.classList.add('color')
+            td.append(color)
         }
         return td
     }
