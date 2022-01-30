@@ -18,6 +18,9 @@ export class AwesomeCoolTable {
             // и не извлекать данные некоторых колонок из свойств объектов
                 this.objects.push(processObj(object, this.columns))
         }
+        for (const column of Object.keys(this.columns)) {
+            this.columns[column].hidden = false
+        }
 
         // state сортировки (включена ли)
         this.tableSortOn = false
@@ -65,7 +68,7 @@ export class AwesomeCoolTable {
                 { name: "hideMenu" },
                     "отображение колонок:",
                     ...Object.keys(this.columns).map((column, i) =>
-                        this.createHideCheckbox(i)
+                        this.createHideCheckbox(column, i)
                     )
             )
         )
@@ -100,22 +103,20 @@ export class AwesomeCoolTable {
         // Создаёт тело таблицы
         const tbody = makeElement(
             "tbody",
-                ...this.objects.map((object) => 
-                    this.fillRow(object)
+                ...this.objects.map((object) =>
+                    this.createRow(object)
                 )
         )
         this.table.append(tbody)
     }
 
-    fillRow(object) {
+    createRow(object) {
         // Заполняет данные для каждого объекта
         const tr = makeElement(
             "tr",
-            {"click" : () => this.editObj(object)},
+            { "click": () => this.editObj(object) },
                 ...Object.keys(this.columns).map((column) =>
-                    // Создаёт ячейку для каждой колонки
-                    this.createTd(object, column)
-                ) 
+                    this.createTd(object, column))
         )
         return tr
     }
@@ -129,6 +130,9 @@ export class AwesomeCoolTable {
         if (column == 'about') {
             // добавляет колонке about css класс (для скрытия информации)
             td.classList.add('about')
+        }
+        if (this.columns[column].hidden) {
+            td.classList.add('hidden')
         }
         return td
     }
@@ -151,22 +155,24 @@ export class AwesomeCoolTable {
         th.sortMore = !th.sortMore // обновление состояния
     }
     
-    createHideCheckbox(i) {
+    createHideCheckbox(column, i) {
         // создание чекбоксов для отображения/скрытия колонок
         const checkbox = makeElement(
             "input",
             {
                 type: "checkbox",
+                name: column,
                 checked: true,
-                "change": () => this.hideColumn(i)
+                "change": () => this.hideColumn(column, i)
             }
         )
         return checkbox
 }
 
-    hideColumn(i) {
+    hideColumn(column, i) {
         for (const each of this.table.rows) {
             each.children[i].classList.toggle("hidden")
+            this.columns[column].hidden = !this.columns[column].hidden
         }
     }
 
@@ -193,6 +199,14 @@ export class AwesomeCoolTable {
                         "button",
                         { type: "submit" },
                             "✓"
+                    ),
+                    makeElement(
+                        "button",
+                        {
+                            type: "button",
+                            "click" : () => this.hideForm(form)
+                        },
+                            "☓"
                     )
             )
             
@@ -223,8 +237,13 @@ export class AwesomeCoolTable {
         for (const prop of inputNames) {
             object[prop] = form[prop].value
         }
-        // обновляет таблицу и закрывает форму
+        // обновляет таблицу
         this.rerenderTable()
+        this.hideForm(form)
+    }
+
+    hideForm(form) {
+        // закрывает форму
         form.remove()
         // обновляет стейт формы
         this.formOpen = false
