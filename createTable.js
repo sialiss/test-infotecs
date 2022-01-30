@@ -19,9 +19,8 @@ export class AwesomeCoolTable {
                 this.objects.push(processObj(object, this.columns))
         }
 
-        // state сортировки 
-        this.tableSortOn = false // включена ли
-        this.tableSortMore = true // по алфавиту/против
+        // state сортировки (включена ли)
+        this.tableSortOn = false
         // state формы (открыта ли)
         this.formOpen = false
     }
@@ -38,25 +37,23 @@ export class AwesomeCoolTable {
             )
         )
         this.table.append(thead)
+
         // создание и заполнение меню таблицы
         this.fillTableMenu()
+        this.tableMenuSorting()
         // создание и заполнение боди таблицы
         this.fillTable()
     }
 
     createHeader(column) {
-        const pointer = makeElement(
-            "p",
-            {sortOn : false}, // state сортировки (включена ли)
-                "○"
-                
-        )
         const th = makeElement(
             "th",
-            {"click" : () => this.tableSort(pointer, column)},
+            {
+                sortMore: true,
+                "click": () => this.tableSort(th, column)
+            },
                 String(this.columns[column]),
-                pointer
-        ) 
+        )
         
         return th
     }
@@ -64,12 +61,34 @@ export class AwesomeCoolTable {
     fillTableMenu() {
         // здесь чекбоксы для скрытия колонок, изменение таблицы
         this.tableMenu.append(
-            makeElement("div",
-                ...Object.keys(this.columns).map((column) =>
-                    this.createHideBtn(column)
-                )
+            makeElement("form",
+                { name: "hideMenu" },
+                    ...Object.keys(this.columns).map((column) =>
+                        this.createHideCheckbox(column)
+                    )
             )
         )
+    }
+
+    tableMenuSorting(sortMore, sort = "выключена") {
+        if (sort == "выключена") {
+            this.sortingStateEl = makeElement(
+                "p",
+                { name: "sortingStateEl" },
+                    `сортировка: ${sort}`)
+            this.tableMenu.append(this.sortingStateEl)
+        }
+        else {
+            let direction
+            if (sortMore) {
+                direction = "A-Я"
+            }
+            else {
+                direction = "Я-А"
+            }
+            this.sortingStateEl.innerText =
+                `сортировка: колонка "${this.columns[sort]}" (${direction})`
+        } 
     }
     
     fillTable() {
@@ -108,16 +127,8 @@ export class AwesomeCoolTable {
         return td
     }
 
-    tableSort(pointer, column) {
-        // разделить на функции
-
-        // if (!(pointer.sortOn)) {
-        //     pointer.sortOn = !pointer.sortOn
-        //     pointer.innerText = "🠑"
-        //     this.tableSortOn = true
-        // }
-
-        if (this.tableSortMore) {
+    tableSort(th, column) {
+        if (th.sortMore) {
             // сортирует по алфавиту, если стейт true
             this.objects.sort(
                 (objA, objB) => objA[column] > objB[column] ? 1 : -1
@@ -129,33 +140,30 @@ export class AwesomeCoolTable {
                 (objA, objB) => objA[column] < objB[column] ? 1 : -1
             )
         }
-
-        this.tableRerender() // обновление таблицы
-        this.tableSortMore = !this.tableSortMore
-
-        // pointer.classList.toggle("rotated")
+        this.rerenderTable() // обновление таблицы
+        this.tableMenuSorting(th.sortMore, column)
+        th.sortMore = !th.sortMore
     }
     
-    createHideBtn(i) {
+    createHideCheckbox(i) {
         const btn = makeElement(
-            "button",
-            { "click" : () => this.hideColumn(i) },
-                "☓"
+            "input",
+            {
+                type: "checkbox",
+                "click": () => this.hideColumn(i)
+            }
         )
         return btn
 }
 
     hideColumn(column) {
         // вместо этого сделать перерендер таблицы без колонки с iтым номером
-        // сделать стейты для проверки
-        // сделать кнопку чекбоксом
-        
-    
+        // использовать checked для проверки
         delete this.columns[column]
 
         this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
         this.table.tHead.remove()
-        this.tableMenu.buttons.remove()
+        document.forms["hideMenu"].remove()
         this.createTable() // перерендер тела таблицы
     }
 
@@ -213,13 +221,13 @@ export class AwesomeCoolTable {
             object[prop] = form[prop].value
         }
         // обновляет таблицу и закрывает форму
-        this.tableRerender()
+        this.rerenderTable()
         form.remove()
         // обновляет стейт формы
         this.formOpen = false
     }
 
-    tableRerender() {
+    rerenderTable() {
         // обновление таблицы
 
         // убирает старый вариант тела таблицы
