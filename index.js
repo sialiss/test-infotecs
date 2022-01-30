@@ -1,4 +1,4 @@
-import { tableParam } from "./tableData.js"
+import { tableParam } from "./data/tableData.js"
 import { AwesomeCoolTable } from "./createTable.js"
 
 // когда обновляется состояние
@@ -12,7 +12,7 @@ async function start() {
 
     // преобразование данных из json в массив объектов
     // для использования fetch нужен сервер
-    const data = await fetch('./data.json').then(res => res.json())
+    const data = await fetch('./data/data.json').then(res => res.json())
 
     const table = new AwesomeCoolTable(tableEl, tableMenuEl, tableParam, data)
     table.createTable()

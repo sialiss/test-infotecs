@@ -1,7 +1,7 @@
-import { makeElement } from "./makeElement.js" 
-// import { createHideBtn } from "./buttons.js"
+import { makeElement } from "./library/makeElement.js"
+import { processObj } from "./library/processObj.js"
 // import { tableSort } from "./tableSort.js"
-import { handleEditSubmit } from "./handleEditSubmit.js"
+import { handleEditSubmit } from "./library/handleEditSubmit.js"
 export class AwesomeCoolTable {
 
     constructor(table, tableMenu, { rowsPerPage, columns }, data) {
@@ -16,7 +16,7 @@ export class AwesomeCoolTable {
             // каждый объект содержит в свойствах необходимые для таблицы данные
             // это нужно, чтобы обработать объекты только один раз,
             // и не извлекать данные некоторых колонок из свойств объектов
-                this.objects.push(this.processObj(object))
+                this.objects.push(processObj(object, this.columns))
         }
 
         // state сортировки 
@@ -111,11 +111,11 @@ export class AwesomeCoolTable {
     tableSort(pointer, column) {
         // разделить на функции
 
-        if (!(pointer.sortOn)) {
-            pointer.sortOn = !pointer.sortOn
-            pointer.innerText = "🠑"
-            this.tableSortOn = true
-        }
+        // if (!(pointer.sortOn)) {
+        //     pointer.sortOn = !pointer.sortOn
+        //     pointer.innerText = "🠑"
+        //     this.tableSortOn = true
+        // }
 
         if (this.tableSortMore) {
             // сортирует по алфавиту, если стейт true
@@ -133,7 +133,7 @@ export class AwesomeCoolTable {
         this.tableRerender() // обновление таблицы
         this.tableSortMore = !this.tableSortMore
 
-        pointer.classList.toggle("rotated")
+        // pointer.classList.toggle("rotated")
     }
     
     createHideBtn(i) {
@@ -160,9 +160,12 @@ export class AwesomeCoolTable {
     }
 
     editObj(object) {
+        // форма изменения объекта (строки) таблицы
         let form
         const formName = "editObj"
         if (!this.formOpen) {
+            // создание формы с инпутами 
+            // (их значение - значение нужной колонки по имени инпута)
             form = makeElement(
                 "form",
                 { name: formName },
@@ -186,6 +189,8 @@ export class AwesomeCoolTable {
             this.formOpen = true
         }
         else {
+            // если форма уже открыта, то берёт форму из документа
+            // обновляет инпуты
             form = document.forms[formName]
             const inputNames = Object.keys(this.columns)
             for (const input of inputNames) {
@@ -193,53 +198,34 @@ export class AwesomeCoolTable {
             }
         }
 
+        // обработка подтверждения формы
         form.onsubmit = (e) =>
             this.handleEditSubmit(e, form.name, object,
                 ...Object.keys(this.columns).map((column) => column))
     }
 
     handleEditSubmit(e, formName, object, ...inputNames) {
+        // предотвращает стандартное поведение
         e.preventDefault()
         const form = document.forms[formName]
+        // обновляет объекту данные по нужной форме
         for (const prop of inputNames) {
             object[prop] = form[prop].value
         }
+        // обновляет таблицу и закрывает форму
         this.tableRerender()
         form.remove()
+        // обновляет стейт формы
         this.formOpen = false
     }
 
     tableRerender() {
-        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
-        this.fillTable() // перерендер тела таблицы
-    }
+        // обновление таблицы
 
-    getFromProperties(object, nedeedData) {
-        // берёт нужные данные в свойствах (если нет, то undefined)
-        // проходит по всем свойствам объекта json, 
-        // если находит, возвращает необходимую информацию
-        for (const name of Object.keys(object)) {
-                    if (object[name][nedeedData]) {
-                        return object[name][nedeedData]
-                    }
-                }
-    }
-
-    processObj(object) {
-        const processedObj = {}
-        for (const column of Object.keys(this.columns)) {
-            if (object[column] != undefined) {
-                // если у объекта json есть колонка с нужным названием,
-                // то ячейка заполняется
-                processedObj[column] = object[column]
-            }
-            else {
-                // если колонка не определена, 
-                // то проверяет есть ли нужные данные в свойствах
-                processedObj[column] = this.getFromProperties(object, column)
-            }
-        }
-        return processedObj
+        // убирает старый вариант тела таблицы
+        this.table.tBodies[0].remove() 
+        // создаёт новый вариант тела таблицы
+        this.fillTable() 
     }
 }
 
