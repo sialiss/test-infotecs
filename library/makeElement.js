@@ -10,6 +10,9 @@ export function makeElement(type, ...children) {
 			if (typeof attributes[prop] === "function") {
 				elem.addEventListener(prop, attributes[prop])
 			}
+			else if (prop == "class") {
+				elem.classList.add(attributes[prop])
+			}
 			else {
 				elem[prop] = attributes[prop]
 			}

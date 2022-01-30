@@ -1,7 +1,5 @@
 import { makeElement } from "./library/makeElement.js"
 import { processObj } from "./library/processObj.js"
-// import { tableSort } from "./tableSort.js"
-import { handleEditSubmit } from "./library/handleEditSubmit.js"
 export class AwesomeCoolTable {
 
     constructor(table, tableMenu, { rowsPerPage, columns }, data) {
@@ -43,7 +41,6 @@ export class AwesomeCoolTable {
 
         // создание и заполнение меню таблицы
         this.fillTableMenu()
-        this.tableMenuSorting()
         // создание и заполнение боди таблицы
         this.fillTable()
     }
@@ -72,21 +69,33 @@ export class AwesomeCoolTable {
                     )
                     
             ),
+            this.tableMenuSorting(),
             makeElement("form",
-                { name: "pages" },
-                    makeElement("button",
-                        {
-                            type: "button",
-                            "click": "func"
-                        },
-                        "⬅"),
-                    makeElement("button",
-                        {
-                            type: "button",
-                            "click": "func"
-                        },
-                        "➡")
-            )
+                {
+                    name: "pages",
+                    class: "wrapper"
+                },
+                    makeElement("div",
+                        makeElement("button",
+                            {
+                                type: "button",
+                                "click": "func"
+                            },
+                                "🠔"
+                        ),
+                        makeElement("button",
+                            {
+                                type: "button",
+                                "click": "func"
+                            },
+                                "➝"
+                        )
+                    ),
+                    makeElement("a",
+                        { name: "pagesCount" }, 
+                            `[ страница/количество страниц ]`
+                    )
+            ) 
         )
     }
 
@@ -99,7 +108,7 @@ export class AwesomeCoolTable {
                 "a",
                 { name: "sortingStateEl" },
                     `сортировка: ${sort}`)
-            this.tableMenu.append(this.sortingStateEl)
+            return this.sortingStateEl
         }
         else {
             // включение сортировки (обновление данных для отображения)
@@ -141,7 +150,7 @@ export class AwesomeCoolTable {
         // создание и заполнение ячейки
         const td = makeElement(
             "td",
-                String(object[column])
+                makeElement("a", String(object[column]))
         )
         if (column == 'about') {
             // добавляет ячейке about css класс (для скрытия информации)
@@ -152,11 +161,22 @@ export class AwesomeCoolTable {
             td.classList.add('hidden')
         }
         if (column == 'eyeColor') {
-            // В колонке “eyeColor” предоставлять данные
-            // в виде цвета, сохраняя возможность сортировки по значению.
-            const color = makeElement("img")
-            color.classList.add('color')
-            td.append(color)
+            
+            /*
+            В колонке “eyeColor” предоставляются данные в виде цвета, 
+            сохраняя возможность сортировки по значению.
+            Название цвета тоже остаётся и его можно менять через форму,
+            при этом цвет также меняется.
+            Если надо скрыть название цвета в таблице, 
+            то можно присвоить ему ксс класс hidden:
+            td.firstChild.classList.add("hidden")
+            Я подумала, что лучше оставить название.
+            */
+
+            const color = makeElement("img", { "class": "color" })
+            color.style["background-color"] = object[column]
+            
+            td.insertBefore(color, td.firstChild)
         }
         return td
     }
@@ -282,4 +302,3 @@ export class AwesomeCoolTable {
         this.fillTable() 
     }
 }
-
