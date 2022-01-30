@@ -36,6 +36,6 @@ body {
     overflow: hidden;
 }
 
-.rotated {
-    transform: rotate(180deg);
+.hidden {
+    display: none;
 }

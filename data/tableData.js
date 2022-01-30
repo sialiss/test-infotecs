@@ -3,9 +3,9 @@
 export const tableParam = {
     rowsPerPage : 10,
     columns : {
-        "firstName": "Имя",
-        "lastName": "Фамилия",
-        "about": "Описание",
-        "eyeColor": "Цвет глаз"
+        "firstName": {value: "Имя"},
+        "lastName": {value: "Фамилия"},
+        "about": {value: "Описание"},
+        "eyeColor": {value: "Цвет глаз"}
     }
 }

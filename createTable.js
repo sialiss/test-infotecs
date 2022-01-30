@@ -49,12 +49,12 @@ export class AwesomeCoolTable {
         const th = makeElement(
             "th",
             {
-                sortMore: true,
+                // стейт сортировки колонки (по алфавиту / в обратном порядке)
+                sortMore: true, 
                 "click": () => this.tableSort(th, column)
             },
-                String(this.columns[column]),
+                String(this.columns[column].value),
         )
-        
         return th
     }
 
@@ -63,22 +63,27 @@ export class AwesomeCoolTable {
         this.tableMenu.append(
             makeElement("form",
                 { name: "hideMenu" },
-                    ...Object.keys(this.columns).map((column) =>
-                        this.createHideCheckbox(column)
+                    "отображение колонок:",
+                    ...Object.keys(this.columns).map((column, i) =>
+                        this.createHideCheckbox(i)
                     )
             )
         )
     }
 
     tableMenuSorting(sortMore, sort = "выключена") {
+        // управление отображением состояния сортировки в меню
+        // по умолчанию сортировка выключена
         if (sort == "выключена") {
+            // создание элемента в меню
             this.sortingStateEl = makeElement(
-                "p",
+                "a",
                 { name: "sortingStateEl" },
                     `сортировка: ${sort}`)
             this.tableMenu.append(this.sortingStateEl)
         }
         else {
+            // включение сортировки (обновление данных для отображения)
             let direction
             if (sortMore) {
                 direction = "A-Я"
@@ -87,7 +92,7 @@ export class AwesomeCoolTable {
                 direction = "Я-А"
             }
             this.sortingStateEl.innerText =
-                `сортировка: колонка "${this.columns[sort]}" (${direction})`
+                `сортировка: колонка "${this.columns[sort].value}" (${direction})`
         } 
     }
     
@@ -116,6 +121,7 @@ export class AwesomeCoolTable {
     }
 
     createTd(object, column) {
+        // создание и заполнение ячейки
         const td = makeElement(
             "td",
                 String(object[column])
@@ -141,30 +147,27 @@ export class AwesomeCoolTable {
             )
         }
         this.rerenderTable() // обновление таблицы
-        this.tableMenuSorting(th.sortMore, column)
-        th.sortMore = !th.sortMore
+        this.tableMenuSorting(th.sortMore, column) // обновление меню
+        th.sortMore = !th.sortMore // обновление состояния
     }
     
     createHideCheckbox(i) {
-        const btn = makeElement(
+        // создание чекбоксов для отображения/скрытия колонок
+        const checkbox = makeElement(
             "input",
             {
                 type: "checkbox",
-                "click": () => this.hideColumn(i)
+                checked: true,
+                "change": () => this.hideColumn(i)
             }
         )
-        return btn
+        return checkbox
 }
 
-    hideColumn(column) {
-        // вместо этого сделать перерендер таблицы без колонки с iтым номером
-        // использовать checked для проверки
-        delete this.columns[column]
-
-        this.table.tBodies[0].remove() // убирает старый вариант тела таблицы
-        this.table.tHead.remove()
-        document.forms["hideMenu"].remove()
-        this.createTable() // перерендер тела таблицы
+    hideColumn(i) {
+        for (const each of this.table.rows) {
+            each.children[i].classList.toggle("hidden")
+        }
     }
 
     editObj(object) {
