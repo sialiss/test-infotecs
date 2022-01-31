@@ -8,8 +8,30 @@ body {
 	color: black;
 }
 
-.data {
+th {
+    padding: 5px;
+}
+
+td {
+    padding: 3px;
+}
+
+a {
+    /* для скрытия видимых частей следующей строки у колонки about */
+    line-height: 1.1;
+}
+
+.table-container {
+    /* 
+    это нужно, чтобы при небольшой ширине экрана таблица сохраняла размер в 50%,
+    добавляется полоса прокрутки
+    при необходимости можно аналогично использовать для меню
+    */
     width: 50%;
+    overflow-x: auto;
+}
+
+.data {
     border-width: 1px;
     border-radius: 10px;
     border: 1px black;
@@ -43,4 +65,9 @@ body {
 .color {
     width: 10px;
     height: 10px;
+    margin-right: 3px;
+}
+
+.eyeColor {
+    white-space: pre;
 }

@@ -173,6 +173,7 @@ export class AwesomeCoolTable {
             Я подумала, что лучше оставить название.
             */
 
+            td.classList.add("eyeColor")
             const color = makeElement("img", { "class": "color" })
             color.style["background-color"] = object[column]
             
