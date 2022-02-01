@@ -271,10 +271,13 @@ export class AwesomeCoolTable {
 }
 
     hideColumn(column, i) {
-        for (const each of this.table.rows) {
-            each.children[i].classList.toggle("hidden")
-            this.columns[column].hidden = !this.columns[column].hidden
+        for (const page of Object.keys(this.pages)) {
+            this.tableEl.rows[0].children[i].classList.toggle("hidden")
+            for (const each of this.pages[page].rows) {
+                each.children[i].classList.toggle("hidden")
+            }
         }
+        this.columns[column].hidden = !this.columns[column].hidden
     }
 
     editObj(object) {
