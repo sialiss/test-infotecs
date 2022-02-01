@@ -1,9 +1,10 @@
 import { makeElement } from "./library/makeElement.js"
 import { processObj } from "./library/processObj.js"
+import { sliceTbody } from "./library/sliceTbody.js"
 export class AwesomeCoolTable {
 
     constructor(table, tableMenu, { rowsPerPage, columns }, data) {
-        this.table = table // Элемент таблицы в DOC
+        this.tableEl = table // Элемент таблицы в DOC
         this.tableMenu = tableMenu // Элемент меню в DOC
         this.rowsPerPage = rowsPerPage // Количество строк на странице
         this.columns = columns // Названия колонок в таблице
@@ -37,7 +38,7 @@ export class AwesomeCoolTable {
                     )
             )
         )
-        this.table.append(thead)
+        this.tableEl.append(thead)
 
         // создание и заполнение меню таблицы
         this.fillTableMenu()
@@ -79,14 +80,14 @@ export class AwesomeCoolTable {
                         makeElement("button",
                             {
                                 type: "button",
-                                "click": "func"
+                                "click": () => this.changePage()
                             },
                                 "🠔"
                         ),
                         makeElement("button",
                             {
                                 type: "button",
-                                "click": "func"
+                                "click": () => this.changePage()
                             },
                                 "➝"
                         )
@@ -132,7 +133,8 @@ export class AwesomeCoolTable {
                     this.createRow(object)
                 )
         )
-        this.table.append(tbody)
+
+        this.createPages(tbody)
     }
 
     createRow(object) {
@@ -180,6 +182,21 @@ export class AwesomeCoolTable {
             td.insertBefore(color, td.firstChild)
         }
         return td
+    }
+
+    createPages(tbody) {
+        // разбивает tbody на страницы и добавляет первую страницу в таблицу
+        this.pages = {}
+        sliceTbody(tbody, this.rowsPerPage).forEach((page, i) => {
+            this.pages[i+1] = page
+        });
+        this.tableEl.append(this.pages[1])
+    }
+
+    changePage(i) {
+        // убирает открытую страницу и добавляет новую
+        this.tableEl.children[1].remove()
+        this.tableEl.append(this.pages[i])
     }
 
     tableSort(th, column) {
