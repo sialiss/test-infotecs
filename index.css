@@ -32,6 +32,7 @@ a {
 }
 
 .data {
+    width: 100%;
     border-width: 1px;
     border-radius: 10px;
     border: 1px black;
