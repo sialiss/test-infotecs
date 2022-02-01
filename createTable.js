@@ -23,8 +23,10 @@ export class AwesomeCoolTable {
 
         // state сортировки (включена ли)
         this.tableSortOn = false
-        // state формы (открыта ли)
+        // state формы изменения объекта (открыта ли)
         this.formOpen = false
+        // state страниц (номер открытой страницы)
+        this.openedPage = 1
     }
 
     createTable() {
@@ -70,33 +72,7 @@ export class AwesomeCoolTable {
                     )
                     
             ),
-            this.tableMenuSorting(),
-            makeElement("form",
-                {
-                    name: "pages",
-                    class: "wrapper"
-                },
-                    makeElement("div",
-                        makeElement("button",
-                            {
-                                type: "button",
-                                "click": () => this.changePage()
-                            },
-                                "🠔"
-                        ),
-                        makeElement("button",
-                            {
-                                type: "button",
-                                "click": () => this.changePage()
-                            },
-                                "➝"
-                        )
-                    ),
-                    makeElement("a",
-                        { name: "pagesCount" }, 
-                            `[ страница/количество страниц ]`
-                    )
-            ) 
+            this.tableMenuSorting()
         )
     }
 
@@ -123,6 +99,62 @@ export class AwesomeCoolTable {
             this.sortingStateEl.innerText =
                 `сортировка: колонка "${this.columns[sort].value}" (${direction})`
         } 
+    }
+
+    tableMenuPages(action = "change") {
+        let form
+        const formName = "pages"
+        if (!(action == "change")) {
+            form = makeElement("form",
+                {
+                    name: formName,
+                    class: "wrapper"
+                },
+                    makeElement("div",
+                        makeElement("button",
+                            {
+                                type: "button",
+                                name: "previous",
+                                "click": () => this.changePage(this.openedPage-1)
+                            },
+                                "🠔"
+                        ),
+                        makeElement("button",
+                            {
+                                type: "button",
+                                name: "next",
+                                "click": () => this.changePage(this.openedPage+1)
+                            },
+                                "➝"
+                        )
+                    ),
+                    makeElement("a",
+                        { name: "pagesCount" }, 
+                            `[ ${this.openedPage}/${Object.keys(this.pages).length} ]`
+                    )
+            )
+
+            this.tableMenu.append(form)
+        }
+        else {
+            form = document.forms[formName]
+            form.lastChild.innerText = `[ ${this.openedPage}/${Object.keys(this.pages).length} ]`
+        }
+
+        // прячет кнопки, если следующей страницы для этой кнопки не существует
+        // открывает, если они есть
+        if (this.pages[this.openedPage - 1] == undefined) {
+            form.firstChild.firstChild.classList.add("hidden")
+        }
+        else {
+            form.firstChild.firstChild.classList.remove("hidden")
+        }
+        if (this.pages[this.openedPage + 1] == undefined) {
+            form.firstChild.lastChild.classList.add("hidden")
+        }
+        else {
+            form.firstChild.lastChild.classList.remove("hidden")
+        }
     }
     
     fillTable() {
@@ -186,17 +218,21 @@ export class AwesomeCoolTable {
 
     createPages(tbody) {
         // разбивает tbody на страницы и добавляет первую страницу в таблицу
+
         this.pages = {}
         sliceTbody(tbody, this.rowsPerPage).forEach((page, i) => {
             this.pages[i+1] = page
         });
-        this.tableEl.append(this.pages[1])
+        this.tableEl.append(this.pages[this.openedPage])
+        this.tableMenuPages("create")
     }
 
     changePage(i) {
         // убирает открытую страницу и добавляет новую
         this.tableEl.children[1].remove()
         this.tableEl.append(this.pages[i])
+        this.openedPage = i
+        this.tableMenuPages()
     }
 
     tableSort(th, column) {
