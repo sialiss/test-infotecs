@@ -27,6 +27,8 @@ export class AwesomeCoolTable {
         this.formOpen = false
         // state страниц (номер открытой страницы)
         this.openedPage = 1
+        // state меню переключения страниц
+        this.changePageOn = false
     }
 
     createTable() {
@@ -101,10 +103,10 @@ export class AwesomeCoolTable {
         } 
     }
 
-    tableMenuPages(action = "change") {
+    tableMenuPages() {
         let form
         const formName = "pages"
-        if (!(action == "change")) {
+        if (!this.changePageOn) {
             form = makeElement("form",
                 {
                     name: formName,
@@ -135,6 +137,7 @@ export class AwesomeCoolTable {
             )
 
             this.tableMenu.append(form)
+            this.changePageOn = true
         }
         else {
             form = document.forms[formName]
@@ -224,7 +227,7 @@ export class AwesomeCoolTable {
             this.pages[i+1] = page
         });
         this.tableEl.append(this.pages[this.openedPage])
-        this.tableMenuPages("create")
+        this.tableMenuPages()
     }
 
     changePage(i) {
@@ -351,7 +354,7 @@ export class AwesomeCoolTable {
         // обновление таблицы
 
         // убирает старый вариант тела таблицы
-        this.table.tBodies[0].remove() 
+        this.tableEl.tBodies[0].remove() 
         // создаёт новый вариант тела таблицы
         this.fillTable() 
     }
