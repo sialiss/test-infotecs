@@ -1,18 +1,25 @@
 import { getFromProperties } from "./getFromProperties.js"
 
-export function processObj(object, columns) {
-        const processedObj = {}
-        for (const column of Object.keys(columns)) {
-            if (object[column] != undefined) {
-                // если у объекта json есть колонка с нужным названием,
-                // то ячейка заполняется
-                processedObj[column] = object[column]
-            }
-            else {
-                // если колонка не определена, 
-                // то проверяет есть ли нужные данные в свойствах
-                processedObj[column] = getFromProperties(object, column)
-            }
+/**
+ * создаёт обработанный объект,
+ * добавляя ему указанные свойства оригинального объекта
+ * @param {object} object - обрабатываемый объект
+ * @param {Array} props - необходимые свойства
+ * @returns {object} обработанный объект
+*/  
+export function processObj(object, props) {
+    const processedObj = {}
+    for (const prop of props) {
+        if (object[prop] != undefined) {
+            // если у объекта json есть колонка с нужным названием,
+            // то ячейка заполняется
+            processedObj[prop] = object[prop]
         }
-        return processedObj
+        else {
+            // если колонка не определена, 
+            // то проверяет есть ли нужные данные в свойствах
+            processedObj[prop] = getFromProperties(object, prop)
+        }
     }
+    return processedObj
+}
