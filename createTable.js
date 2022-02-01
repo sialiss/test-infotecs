@@ -9,6 +9,7 @@ export class AwesomeCoolTable {
         this.rowsPerPage = rowsPerPage // Количество строк на странице
         this.columns = columns // Названия колонок в таблице
         this.data = data // Массив объектов данных из JSON
+        this.pages = {} // Страницы таблицы
         this.objects = []
         for (const object of this.data) {
             // Заполняет массив обработанными объектами,
@@ -17,10 +18,11 @@ export class AwesomeCoolTable {
             // и не извлекать данные некоторых колонок из свойств объектов
                 this.objects.push(processObj(object, this.columns))
         }
+
         for (const column of Object.keys(this.columns)) {
+            // для каждой колонки стейт отображения
             this.columns[column].hidden = false
         }
-
         // state сортировки (включена ли)
         this.tableSortOn = false
         // state формы изменения объекта (открыта ли)
@@ -64,7 +66,7 @@ export class AwesomeCoolTable {
     }
 
     fillTableMenu() {
-        // здесь чекбоксы для скрытия колонок, изменение таблицы
+        // здесь чекбоксы для скрытия колонок, сортировка таблицы таблицы
         this.tableMenu.append(
             makeElement("form",
                 { name: "hideMenu" },
@@ -136,8 +138,8 @@ export class AwesomeCoolTable {
                     )
             )
 
-            this.tableMenu.append(form)
             this.changePageOn = true
+            this.tableMenu.append(form)
         }
         else {
             form = document.forms[formName]
@@ -220,13 +222,15 @@ export class AwesomeCoolTable {
     }
 
     createPages(tbody) {
-        // разбивает tbody на страницы и добавляет первую страницу в таблицу
+        // разбивает tbody на страницы
+        // добавляет страницу по умолчанию в таблицу
 
-        this.pages = {}
         sliceTbody(tbody, this.rowsPerPage).forEach((page, i) => {
             this.pages[i+1] = page
         });
         this.tableEl.append(this.pages[this.openedPage])
+        
+        // создание и заполнение меню для страниц
         this.tableMenuPages()
     }
 
@@ -234,6 +238,7 @@ export class AwesomeCoolTable {
         // убирает открытую страницу и добавляет новую
         this.tableEl.children[1].remove()
         this.tableEl.append(this.pages[i])
+        // обновляет стейт открытой таблицы и меню переключения таблиц
         this.openedPage = i
         this.tableMenuPages()
     }
@@ -271,13 +276,20 @@ export class AwesomeCoolTable {
 }
 
     hideColumn(column, i) {
+        // скрывает выбранную колонку
         for (const page of Object.keys(this.pages)) {
             this.tableEl.rows[0].children[i].classList.toggle("hidden")
-            for (const each of this.pages[page].rows) {
-                each.children[i].classList.toggle("hidden")
-            }
+            this.hideCells(page, i)
         }
+        // обновляет стейт отображения колонки
         this.columns[column].hidden = !this.columns[column].hidden
+    }
+
+    hideCells(page, i) {
+        // скрывает ячейку нужной колонки в каждой таблице
+        for (const each of this.pages[page].rows) {
+               each.children[i].classList.toggle("hidden")
+        }
     }
 
     editObj(object) {
@@ -347,7 +359,7 @@ export class AwesomeCoolTable {
     }
 
     hideForm(form) {
-        // закрывает форму
+        // закрывает форму редактирования данных
         form.remove()
         // обновляет стейт формы
         this.formOpen = false
