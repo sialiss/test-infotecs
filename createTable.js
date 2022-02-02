@@ -243,13 +243,13 @@ export class AwesomeCoolTable {
             "td",
                 makeElement("a", String(object[column]))
         )
-        if (column == 'about') {
-            // добавляет ячейке about css класс (для скрытия информации)
-            td.classList.add('about')
-        }
         if (this.columns[column].hidden) {
             // скрывает ячейку, если колонка скрыта
             td.classList.add('hidden')
+        }
+        if (column == 'about') {
+            // добавляет ячейке about css класс (для скрытия информации)
+            td.classList.add('about')
         }
         if (column == 'eyeColor') {
             
