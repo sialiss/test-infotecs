@@ -202,7 +202,7 @@ export class AwesomeCoolTable {
     }
     
     /** 
-     * создаёт тело таблицы 
+     * создаёт тело таблицы, неиспользуемые страницы не рендерятся 
     */
     fillTable() {
         const tbody = makeElement(
@@ -261,12 +261,14 @@ export class AwesomeCoolTable {
             Если надо скрыть название цвета в таблице, 
             то можно присвоить ему ксс класс hidden:
             td.firstChild.classList.add("hidden")
-            Я подумала, что лучше оставить название.
+            Я подумала, что лучше оставить название, так удобнее пользователю.
+
+            Картинка глаза тоже легко убирается в css, это просто прикольно.
             */
 
             td.classList.add("eyeColor")
-            const color = makeElement("div", { "class": "color" })
-            color.style["background-color"] = object[column]
+            const color = makeElement("div", { "class" : "eye" })
+            color.style["color"] = object[column]
             
             td.insertBefore(color, td.firstChild)
         }

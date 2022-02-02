@@ -8,17 +8,15 @@ body {
 	color: black;
 }
 
-th {
-    padding: 5px;
+.wrapper {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    
 }
 
-td {
-    padding: 3px;
-}
-
-a {
-    /* для скрытия видимых частей следующей строки у колонки about */
-    line-height: 1.1;
+.hidden {
+    display: none;
 }
 
 .table-container {
@@ -33,17 +31,28 @@ a {
 
 .data {
     width: 100%;
-    border-width: 1px;
-    border-radius: 10px;
-    border: 1px black;
     border-collapse: collapse;
+    border: 0;
+} 
+
+th {
+    padding: 5px;
+    background: rgb(208, 243, 253);
+    border: 0;
 }
 
-.wrapper {
-    display: grid;
-    justify-items: center;
-    gap: 10px;
-    
+td {
+    /* для скрытия видимых частей следующей строки у колонки about */
+    line-height: 1.2;
+
+    padding: 4px;
+    background: rgb(241, 252, 255);
+    border: 0;
+    border-right: 1px solid rgb(185, 240, 255);
+}
+
+a {
+    line-height: 1;
 }
 
 .about {
@@ -59,17 +68,31 @@ a {
     overflow: hidden;
 }
 
-.hidden {
-    display: none;
+.eyeColor {
+    white-space: pre;
+    border-right: 0;
 }
 
-.color {
-    display: inline-block;
+.eye {
+	display: inline-block;
     width: 10px;
     height: 10px;
     margin-right: 3px;
-}
 
-.eyeColor {
-    white-space: pre;
+    /* Создание картинки глаза */
+	background-image:
+		/* Отблеск */
+		radial-gradient(circle at 30% 25%, #FFF 10%, transparent calc(10% + 2px)),
+		/* Зрачок */
+		radial-gradient(#000 20%, transparent calc(20% + 2px)),
+		/* Цвет радужки */
+		linear-gradient(currentColor, currentColor),
+		/* Градиент */
+		radial-gradient(#FFCECE, #FF0000);
+
+	/* Цвет радужной оболочки установлен в режим `color`, 
+    чтобы применить цвет к градиенту радужной оболочки. */
+	background-blend-mode: normal, normal, color, normal;
+	background-size: contain;
+	border-radius: 50%;
 }
