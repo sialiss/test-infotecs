@@ -1,5 +1,8 @@
 # test-infotecs
 
+https://github.com/sialiss/test-infotecs
+https://sialiss.github.io/test-infotecs/
+
 Это моё тестовое задание для отбора на стажировку в Infotecs, JS разработчик
 В коде есть комментарии и JSDoc, тут я объясняю некоторые решения, возникшие в ходе выполнения
 
