@@ -12,7 +12,6 @@ body {
     display: grid;
     justify-items: center;
     gap: 10px;
-    
 }
 
 .table-container {
@@ -33,23 +32,24 @@ body {
 } 
 
 th {
+    height: 2.3em;
     padding: 5px;
     background: rgb(208, 243, 253);
     border: none;
+    border-right: 1px solid rgb(185, 240, 255);
 }
 
 td {
-    /* для скрытия видимых частей следующей строки у колонки about */
+    /* для скрытия видимых частей следующей строки 
+    у колонки about из-за изменения высоты */
     line-height: 1.2;
+
+    height: 2.3em;
 
     padding: 4px;
     background: rgb(241, 252, 255);
     border: none;
     border-right: 1px solid rgb(185, 240, 255);
-}
-
-a {
-    line-height: 1;
 }
 
 .about {

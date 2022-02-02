@@ -80,7 +80,7 @@ export class AwesomeCoolTable {
             "th",
             {
                 // стейт сортировки колонки (по алфавиту / в обратном порядке)
-                sortAscending: true, 
+                sortAscending: true,
                 "click": () => this.tableSort(th, column)
             },
                 String(this.columns[column].value),
@@ -248,8 +248,8 @@ export class AwesomeCoolTable {
             td.classList.add('hidden')
         }
         if (column == 'about') {
-            // добавляет ячейке about css класс (для скрытия информации)
-            td.classList.add('about')
+            // добавляет данным ячейки about css класс (для скрытия информации)
+            td.firstChild.classList.add('about')
         }
         if (column == 'eyeColor') {
             
