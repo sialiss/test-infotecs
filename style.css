@@ -1,91 +1,117 @@
 html {
-    margin: 0; 
-    padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
-body { 
-    background: rgb(230, 249, 255);
-	color: black;
+body {
+	font-family: "Segoe UI", Tahoma, sans-serif;
+	background: #f5f6fa;
+	color: #2f3640;
+	margin: 0;
+	padding: 20px;
 }
 
 .wrapper {
-    display: grid;
-    justify-items: center;
-    gap: 10px;
+	display: grid;
+	justify-items: center;
+	gap: 10px;
 }
 
 .table-container {
-    /* 
+	/* 
     это нужно, чтобы при небольшой ширине экрана таблица сохраняла размер в 50%,
     добавляется полоса прокрутки
     при необходимости можно аналогично использовать для меню
     */
-    width: 50%;
-    overflow-x: auto;
+	width: 50%;
+	overflow-x: auto;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	padding: 10px;
 }
 
-.data {
-    width: 100%;
-    height: 100%;
-    border-collapse: collapse;
+table.data {
+	width: 100%;
+	height: 100%;
+	border-collapse: collapse;
+	border-radius: 12px;
+	overflow: hidden;
     border: none;
-} 
-
-th {
-    height: 2.3em;
-    padding: 5px;
-    background: rgb(208, 243, 253);
-    border: none;
-    border-right: 1px solid rgb(185, 240, 255);
 }
 
-td {
-    /* для скрытия видимых частей следующей строки 
+table.data th {
+	height: 2.3em;
+
+	background: #273c75;
+	color: #f5f6fa;
+	padding: 12px 16px;
+	text-align: left;
+	font-weight: 600;
+	cursor: pointer;
+	user-select: none;
+	transition: background 0.3s;
+}
+
+table.data th:hover {
+	background: #40739e;
+}
+
+table.data td {
+	/* для скрытия видимых частей следующей строки 
     у колонки about из-за изменения высоты */
-    line-height: 1.2;
+	line-height: 1.2;
 
-    height: 2.3em;
-
-    padding: 4px;
-    background: rgb(241, 252, 255);
+	height: 2.3em;
+	padding: 12px 16px;
+	border-top: 1px solid #dcdde1;
+	transition: background 0.2s;
     border: none;
-    border-right: 1px solid rgb(185, 240, 255);
+}
+
+table.data tr:nth-child(even) {
+	background: #f9f9f9;
+}
+
+table.data tr:hover {
+	background: #e1f0ff;
+	cursor: pointer;
 }
 
 .about {
-    /* 
+	/* 
     отображение только первых двух строк
     поддерживается всеми браузерами,
     кроме IE, OperaMini, KaiOS Browser из-за -webkit-
     для полной поддержки можно сделать это с помощью JS 
     */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;  
-    overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .eyeColor {
-    white-space: pre;
-    border-right: none;
+	white-space: pre;
+	border-right: none;
 }
 
 .eye {
 	display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 3px;
+	width: 10px;
+	height: 10px;
+	margin-right: 3px;
 
-    /* Создание картинки глаза */
+	/* Создание картинки глаза */
 	background-image:
-		/* Отблеск */
-		radial-gradient(circle at 30% 25%, #FFF 10%, transparent calc(10% + 2px)),
-		/* Зрачок */
-		radial-gradient(#000 20%, transparent calc(20% + 2px)),
-		/* Цвет радужки */
-		linear-gradient(currentColor, currentColor),
-		/* Градиент */
-		radial-gradient(#FFCECE, #FF0000);
+		/* Отблеск */ radial-gradient(
+			circle at 30% 25%,
+			#fff 10%,
+			transparent calc(10% + 2px)
+		),
+		/* Зрачок */ radial-gradient(#000 20%, transparent calc(20% + 2px)),
+		/* Цвет радужки */ linear-gradient(currentColor, currentColor),
+		/* Градиент */ radial-gradient(#ffcece, #ff0000);
 
 	/* Цвет радужной оболочки установлен в режим `color`, 
     чтобы применить цвет к градиенту радужной оболочки. */
@@ -95,5 +121,13 @@ td {
 }
 
 .hidden {
-    display: none;
+	display: none;
+}
+
+@media (max-width: 768px) {
+	table.data th,
+	table.data td {
+		padding: 10px;
+		font-size: 14px;
+	}
 }
